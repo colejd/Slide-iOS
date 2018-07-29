@@ -26,9 +26,9 @@ final class ThumbnailLinkCellView: LinkCellView {
             let ceight = SettingValues.postViewMode == .COMPACT ? CGFloat(4) : CGFloat(8)
             let ctwelve = SettingValues.postViewMode == .COMPACT ? CGFloat(8) : CGFloat(12)
             if SettingValues.actionBarMode != .FULL {
-                thumbImageContainer.bottomAnchor <= contentView.bottomAnchor - ctwelve
+                thumbImageContainer.bottomAnchor == contentView.bottomAnchor - ctwelve
             } else {
-                thumbImageContainer.bottomAnchor <= box.topAnchor - ceight
+                thumbImageContainer.bottomAnchor == box.topAnchor - ceight
             }
 
             // Thumbnail sizing
@@ -41,9 +41,9 @@ final class ThumbnailLinkCellView: LinkCellView {
                 }
             } else {
                 if SettingValues.actionBarMode == .SIDE_RIGHT {
-                    thumbImageContainer.rightAnchor == sideButtons.leftAnchor - ceight
+                    thumbImageContainer.rightAnchor == sideButtons.leftAnchor - ceight  ~ .required - 1
                 } else {
-                    thumbImageContainer.rightAnchor == contentView.rightAnchor - ctwelve
+                    thumbImageContainer.rightAnchor == contentView.rightAnchor - ctwelve  ~ .required - 1
                 }
             }
 
@@ -64,9 +64,9 @@ final class ThumbnailLinkCellView: LinkCellView {
             }
             title.topAnchor == contentView.topAnchor + ctwelve
             if SettingValues.actionBarMode != .FULL {
-                title.bottomAnchor <= contentView.bottomAnchor - ctwelve
+                title.bottomAnchor == contentView.bottomAnchor - ctwelve
             } else {
-                title.bottomAnchor <= box.topAnchor - ceight
+                title.bottomAnchor == box.topAnchor - ceight
             }
         }
     }

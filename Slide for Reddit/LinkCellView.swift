@@ -476,13 +476,13 @@ class LinkCellView: UICollectionViewCell, UIViewControllerPreviewingDelegate, TT
             
             if SettingValues.actionBarMode == .FULL || full {
                 box.leftAnchor == contentView.leftAnchor + ctwelve
-                box.bottomAnchor == contentView.bottomAnchor - ceight
+                box.bottomAnchor == contentView.bottomAnchor - ceight ~ .required - 1
                 box.centerYAnchor == buttons.centerYAnchor // Align vertically with buttons
-            box.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .vertical)
+                box.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .vertical)
                 box.heightAnchor == CGFloat(24)
                 buttons.heightAnchor == CGFloat(24)
-                buttons.rightAnchor == contentView.rightAnchor - ctwelve
-                buttons.bottomAnchor == contentView.bottomAnchor - ceight
+                buttons.rightAnchor == contentView.rightAnchor - ctwelve ~ .required - 1
+                buttons.bottomAnchor == contentView.bottomAnchor - ceight ~ .required - 1
                 buttons.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .vertical)
             } else if SettingValues.actionBarMode.isSide() {
                 if SettingValues.actionBarMode == .SIDE_RIGHT {
@@ -526,7 +526,34 @@ class LinkCellView: UICollectionViewCell, UIViewControllerPreviewingDelegate, TT
     }
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-        return layoutAttributes
+//        setNeedsLayout()
+//        layoutIfNeeded()
+
+        let attributes = super.preferredLayoutAttributesFitting(layoutAttributes)
+        let newSize = CGSize(width: attributes.bounds.width, height: UILayoutFittingCompressedSize.height)
+        let size = systemLayoutSizeFitting(
+            newSize,
+            withHorizontalFittingPriority: UILayoutPriorityRequired,
+            verticalFittingPriority: UILayoutPriorityFittingSizeLevel
+        )
+
+        attributes.bounds.size = size
+        return attributes
+
+//        let autoLayoutAttributes = super.preferredLayoutAttributesFitting(layoutAttributes)
+//
+//        // Specify you want _full width_
+//        let targetSize = CGSize(width: layoutAttributes.frame.width, height: 0)
+//
+//        // Calculate the size (height) using Auto Layout
+//        let autoLayoutSize = contentView.systemLayoutSizeFitting(targetSize, withHorizontalFittingPriority: UILayoutPriorityRequired, verticalFittingPriority: UILayoutPriorityDefaultLow)
+//        let autoLayoutFrame = CGRect(origin: autoLayoutAttributes.frame.origin, size: autoLayoutSize)
+//
+//        // Assign the new size to the layout attributes
+//        autoLayoutAttributes.frame = autoLayoutFrame
+//        return autoLayoutAttributes
+
+//        return layoutAttributes
     }
 
     func configure(submission: RSubmission, parent: UIViewController & MediaVCDelegate, nav: UIViewController?, baseSub: String, test: Bool = false) {
