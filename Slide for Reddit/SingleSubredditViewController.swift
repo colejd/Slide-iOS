@@ -146,7 +146,7 @@ class SingleSubredditViewController: MediaViewController {
         self.view = UIView.init(frame: CGRect.zero)
 
         self.view.addSubview(tableView)
-        tableView.edgeAnchors == view.edgeAnchors
+//        tableView.edgeAnchors == view.edgeAnchors
 
         self.tableView.delegate = self
         self.tableView.dataSource = self
@@ -221,8 +221,9 @@ class SingleSubredditViewController: MediaViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-//        tableView.frame = self.view.bounds
+        tableView.frame = self.view.bounds
 
+        // TODO: This might be triggering the tableView to lay itself out
         if self.view.bounds.width != oldsize {
             oldsize = self.view.bounds.width
             flowLayout.reset()
@@ -271,18 +272,18 @@ class SingleSubredditViewController: MediaViewController {
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        let currentY = scrollView.contentOffset.y
-//        if !SettingValues.pinToolbar {
-//            if currentY > lastYUsed && currentY > 60 {
-//                if navigationController != nil && !isHiding && !isToolbarHidden && !(scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
-//                    hideUI(inHeader: true)
-//                }
-//            } else if (currentY < lastYUsed + 20) && !isHiding && navigationController != nil && (isToolbarHidden) {
-//                showUI()
-//            }
-//        }
-//        lastYUsed = currentY
-//        lastY = currentY
+        let currentY = scrollView.contentOffset.y
+        if !SettingValues.pinToolbar {
+            if currentY > lastYUsed && currentY > 60 {
+                if navigationController != nil && !isHiding && !isToolbarHidden && !(scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
+                    hideUI(inHeader: true)
+                }
+            } else if (currentY < lastYUsed + 20) && !isHiding && navigationController != nil && (isToolbarHidden) {
+                showUI()
+            }
+        }
+        lastYUsed = currentY
+        lastY = currentY
     }
 
     func hideUI(inHeader: Bool) {

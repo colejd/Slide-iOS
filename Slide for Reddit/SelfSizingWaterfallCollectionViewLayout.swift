@@ -114,6 +114,7 @@ class SelfSizingWaterfallCollectionViewLayout: UICollectionViewLayout {
 
     func reset() {
 //        prepare()
+//        invalidateLayout()
     }
 
     weak var delegate: SelfSizingWaterfallCollectionViewLayoutDelegate?
@@ -195,7 +196,7 @@ class SelfSizingWaterfallCollectionViewLayout: UICollectionViewLayout {
     /**
      An estimate for an item's height for use in a preliminary layout. A value returned by `preferredLayoutAttributesFittingAttributes:` in a UICollectionViewCell will take precedence over this value. Default: 200.0f.
      */
-    var estimatedItemHeight: CGFloat = 100.0 {
+    var estimatedItemHeight: CGFloat = 200.0 {
         didSet {
             if estimatedItemHeight != oldValue {
                 invalidateLayout()
@@ -344,7 +345,7 @@ class SelfSizingWaterfallCollectionViewLayout: UICollectionViewLayout {
         let totalGutterWidth: CGFloat = singleGutterWidth * numberOfGutters
         let minimumLineSpacing: CGFloat = self.minimumLineSpacing(inSection: section)
         let itemCount: Int = collectionView?.numberOfItems(inSection: section) ?? 0
-        let itemWidth: CGFloat = floor((cellContentAreaWidth - totalGutterWidth) / CGFloat(numberOfColumns)) // TODO: Changed from floorf
+        let itemWidth: CGFloat = ((cellContentAreaWidth - totalGutterWidth) / CGFloat(numberOfColumns)).rounded(.down)
 
         for item in 0 ..< itemCount {
             let indexPath = IndexPath(item: item, section: section)
@@ -361,7 +362,7 @@ class SelfSizingWaterfallCollectionViewLayout: UICollectionViewLayout {
             let cellAttributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
             cellAttributes.frame = CGRect(x: xOffset, y: yOffset, width: itemWidth, height: itemHeight)
 
-            appendHeight(ceil(cellAttributes.frame.height + minimumLineSpacing), toColumn: shortestColumnIndex, inSection: section)
+            appendHeight((cellAttributes.frame.height + minimumLineSpacing).rounded(.up), toColumn: shortestColumnIndex, inSection: section)
             self.allItemAttributes[indexPath] = cellAttributes
         }
 
@@ -497,24 +498,26 @@ class SelfSizingWaterfallCollectionViewLayout: UICollectionViewLayout {
             preferredItemAttributes[preferredAttributes.indexPath] = preferredAttributes
         }
 
-        return true
+        return super.shouldInvalidateLayout(forPreferredLayoutAttributes: preferredAttributes, withOriginalAttributes: originalAttributes)
+//        return false // TODO: Return true here causes P R O B L E M S
     }
 
-    // TODO: This function does nothing.
-//    override func invalidationContext(forPreferredLayoutAttributes preferredAttributes: UICollectionViewLayoutAttributes, withOriginalAttributes originalAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutInvalidationContext {
-//
-//        let context = super.invalidationContext(forPreferredLayoutAttributes: preferredAttributes, withOriginalAttributes: originalAttributes)
-//        context.invalidateEverything // TODO: This doesn't do anything
-//
-//        return context
-//    }
+    // TODO: This function does nothing the way it's written.
+    override func invalidationContext(forPreferredLayoutAttributes preferredAttributes: UICollectionViewLayoutAttributes, withOriginalAttributes originalAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutInvalidationContext {
+
+        let context = super.invalidationContext(forPreferredLayoutAttributes: preferredAttributes, withOriginalAttributes: originalAttributes)
+        context.invalidateEverything // TODO: This doesn't do anything
+
+        return context
+    }
 
     // MARK: -
     // MARK: Invalidation
 
     override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         // TODO: Maybe only check width
-        return collectionView.flatMap { newBounds.size != $0.frame.size } ?? false
+        return collectionView.flatMap { newBounds.width != $0.frame.width } ?? false
+//        return false
     }
 
     override func invalidateLayout(with context: UICollectionViewLayoutInvalidationContext) {

@@ -26,9 +26,9 @@ final class ThumbnailLinkCellView: LinkCellView {
             let ceight = SettingValues.postViewMode == .COMPACT ? CGFloat(4) : CGFloat(8)
             let ctwelve = SettingValues.postViewMode == .COMPACT ? CGFloat(8) : CGFloat(12)
             if SettingValues.actionBarMode != .FULL {
-                thumbImageContainer.bottomAnchor == contentView.bottomAnchor - ctwelve
+                thumbImageContainer.bottomAnchor <= contentView.bottomAnchor - ctwelve
             } else {
-                thumbImageContainer.bottomAnchor == box.topAnchor - ceight
+                thumbImageContainer.bottomAnchor <= box.topAnchor - ceight
             }
 
             // Thumbnail sizing

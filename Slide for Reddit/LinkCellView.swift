@@ -35,6 +35,10 @@ enum CurrentType {
 
 class LinkCellView: UICollectionViewCell, UIViewControllerPreviewingDelegate, TTTAttributedLabelDelegate, UIGestureRecognizerDelegate {
 
+    override class var requiresConstraintBasedLayout: Bool {
+        return true
+    }
+
     func upvote(sender: UITapGestureRecognizer? = nil) {
         //todo maybe? contentView.blink(color: GMColor.orange500Color())
         del?.upvote(self)
@@ -115,6 +119,8 @@ class LinkCellView: UICollectionViewCell, UIViewControllerPreviewingDelegate, TT
     var constraintsForType: [NSLayoutConstraint] = []
     var constraintsForContent: [NSLayoutConstraint] = []
 
+    var areConstraintsCalculated = false
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -151,6 +157,7 @@ class LinkCellView: UICollectionViewCell, UIViewControllerPreviewingDelegate, TT
 
         self.accessibilityIdentifier = "Link Cell View"
         self.contentView.accessibilityIdentifier = "Link Cell Content View"
+        self.contentView.translatesAutoresizingMaskIntoConstraints = true
         
         self.thumbImageContainer = UIView().then {
             $0.accessibilityIdentifier = "Thumbnail Image Container"
@@ -189,6 +196,8 @@ class LinkCellView: UICollectionViewCell, UIViewControllerPreviewingDelegate, TT
             $0.font = FontGenerator.fontOfSize(size: 18, submission: true)
             $0.isOpaque = false
             $0.backgroundColor = ColorUtil.foregroundColor
+            $0.verticalAlignment = .top
+            $0.setContentCompressionResistancePriority(UILayoutPriorityRequired, for: .vertical)
         }
 
         self.hide = UIImageView(frame: CGRect(x: 0, y: 0, width: 24, height: 24)).then {
@@ -524,22 +533,32 @@ class LinkCellView: UICollectionViewCell, UIViewControllerPreviewingDelegate, TT
         
         // Deriving classes will populate constraintsForContent in the override for this method.
     }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        areConstraintsCalculated = false
+    }
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
 //        setNeedsLayout()
 //        layoutIfNeeded()
 
+        // Method 1
         let attributes = super.preferredLayoutAttributesFitting(layoutAttributes)
-        let newSize = CGSize(width: attributes.bounds.width, height: UILayoutFittingCompressedSize.height)
-        let size = systemLayoutSizeFitting(
-            newSize,
-            withHorizontalFittingPriority: UILayoutPriorityRequired,
-            verticalFittingPriority: UILayoutPriorityFittingSizeLevel
-        )
+//        if !areConstraintsCalculated { // TODO: Test if this works. Prevents attributes from being calculated more than once.
+            let newSize = CGSize(width: attributes.bounds.width, height: UILayoutFittingCompressedSize.height)
+            let size = systemLayoutSizeFitting(
+                newSize,
+                withHorizontalFittingPriority: UILayoutPriorityRequired,
+                verticalFittingPriority: UILayoutPriorityFittingSizeLevel
+            )
 
-        attributes.bounds.size = size
+            attributes.bounds.size = size
+            areConstraintsCalculated = true
+//        }
         return attributes
 
+        // Method 2
 //        let autoLayoutAttributes = super.preferredLayoutAttributesFitting(layoutAttributes)
 //
 //        // Specify you want _full width_
@@ -557,6 +576,7 @@ class LinkCellView: UICollectionViewCell, UIViewControllerPreviewingDelegate, TT
     }
 
     func configure(submission: RSubmission, parent: UIViewController & MediaVCDelegate, nav: UIViewController?, baseSub: String, test: Bool = false) {
+//        areConstraintsCalculated = false
         self.link = submission
         self.setLink(submission: submission, parent: parent, nav: nav, baseSub: baseSub, test: test)
         layoutForContent()
