@@ -498,8 +498,7 @@ class SelfSizingWaterfallCollectionViewLayout: UICollectionViewLayout {
             preferredItemAttributes[preferredAttributes.indexPath] = preferredAttributes
         }
 
-        return super.shouldInvalidateLayout(forPreferredLayoutAttributes: preferredAttributes, withOriginalAttributes: originalAttributes)
-//        return false // TODO: Return true here causes P R O B L E M S
+        return preferredAttributes.size.height != originalAttributes.size.height
     }
 
     // TODO: This function does nothing the way it's written.

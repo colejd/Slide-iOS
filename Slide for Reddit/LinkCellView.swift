@@ -542,9 +542,11 @@ class LinkCellView: UICollectionViewCell, UIViewControllerPreviewingDelegate, TT
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
 //        setNeedsLayout()
 //        layoutIfNeeded()
+        layoutAttributes.bounds.size.height = systemLayoutSizeFitting(UILayoutFittingCompressedSize).height
+        return layoutAttributes
 
         // Method 1
-        let attributes = super.preferredLayoutAttributesFitting(layoutAttributes)
+        /*let attributes = super.preferredLayoutAttributesFitting(layoutAttributes)
 //        if !areConstraintsCalculated { // TODO: Test if this works. Prevents attributes from being calculated more than once.
             let newSize = CGSize(width: attributes.bounds.width, height: UILayoutFittingCompressedSize.height)
             let size = systemLayoutSizeFitting(
@@ -556,7 +558,7 @@ class LinkCellView: UICollectionViewCell, UIViewControllerPreviewingDelegate, TT
             attributes.bounds.size = size
             areConstraintsCalculated = true
 //        }
-        return attributes
+        return attributes*/
 
         // Method 2
 //        let autoLayoutAttributes = super.preferredLayoutAttributesFitting(layoutAttributes)
